@@ -9,14 +9,16 @@ using HuggingFace.API;
 public class SpeechRecognition : MonoBehaviour
 {
     [SerializeField] Button startButton;
-    [SerializeField]Button stopButton;
-    [SerializeField] TextMeshProUGUI text;
+    [SerializeField] Button stopButton;
+    [SerializeField] public TextMeshProUGUI text;
 
 
     AudioClip clip;
     byte[] bytes;
     bool recording;
 
+    public static SpeechRecognition Instance { get; private set; }
+    
     private void Start()
     {
         startButton.onClick.AddListener(StartRecording);
