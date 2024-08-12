@@ -8,11 +8,11 @@ using UnityEngine.UI;
 public class APIManager : MonoBehaviour
 {
     [SerializeField] private string gasURL;
-    public string prompt;
-    string response;
-    [SerializeField]TextMeshProUGUI tmp;
-    bool controlButton = false;
-
+    public string prompt=" ";
+    public string response,queryresp=" ";
+    [SerializeField]TextMeshProUGUI tmp,responsetmp;
+    SpeechRecognition speech;
+    [SerializeField] GameObject speechrec;
     public static APIManager Instance { get; private set; }
 
     private void Awake()
@@ -27,21 +27,24 @@ public class APIManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    private void Start()
+    {
+       speech =  speechrec.GetComponent<SpeechRecognition>();
+       
+    }
 
     private void Update()
     {
-        if (controlButton)
+        if (speech.promptbool)
         {
             StartCoroutine(SendDataToGAS());
-            controlButton = false;
+         
         }
     }
 
     private IEnumerator SendDataToGAS()
     {
         WWWForm form = new WWWForm();
-        prompt = tmp.text;
         form.AddField("parameter", prompt);
         UnityWebRequest www = UnityWebRequest.Post(gasURL, form);
 
@@ -57,9 +60,9 @@ public class APIManager : MonoBehaviour
             response = "Hata";
         }
 
-        Debug.Log(response);
-
-
+        Debug.Log("response : "+response);
+        responsetmp.text = response;
+        
     }
 
    
@@ -68,10 +71,7 @@ public class APIManager : MonoBehaviour
         prompt = value;
     }
 
-    public void butonControl()
-    {
-        controlButton = true;
-    }
+    
 
    
 }

@@ -12,15 +12,16 @@ public class SpeechRecognition : MonoBehaviour
     [SerializeField] Button stopButton;
     [SerializeField] public TextMeshProUGUI text;
 
-
     AudioClip clip;
     byte[] bytes;
     bool recording;
-
+    public bool promptbool;
+    public bool corotinebool;
     public static SpeechRecognition Instance { get; private set; }
     
     private void Start()
     {
+        promptbool = false;
         startButton.onClick.AddListener(StartRecording);
         stopButton.onClick.AddListener(StopRecording);
     }
@@ -29,19 +30,40 @@ public class SpeechRecognition : MonoBehaviour
         HuggingFaceAPI.AutomaticSpeechRecognition(bytes, response => {
             text.color = Color.white;
             text.text = response;
+            APIManager.Instance.prompt = response;
         }, error => {
             text.color = Color.red;
             text.text = error;
+            APIManager.Instance.prompt = error;
         });
+        StartCoroutine(waiting());
     }
+
+    IEnumerator waiting()
+    {
+        yield return new WaitForSeconds(2);
+        corotinebool = true;
+    }
+
     void StartRecording()
     {
+        promptbool = false;
         clip = Microphone.Start(null, false, 10, 44100);
         recording = true;
     }
 
     private void Update()
     {
+        if (corotinebool)
+        {
+            promptbool = true;
+            corotinebool = false;
+        }
+        else
+        {
+            promptbool = false;
+        }
+
         if(recording && Microphone.GetPosition(null) >= clip.samples)
         {
             StopRecording();
@@ -50,6 +72,7 @@ public class SpeechRecognition : MonoBehaviour
 
     void StopRecording()
     {
+        
         var position = Microphone.GetPosition(null);
         Microphone.End(null);
         var samples = new float[position * clip.channels];

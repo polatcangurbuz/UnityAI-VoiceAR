@@ -6,13 +6,29 @@ using SpeechLib;
 public class DontSprayIt : MonoBehaviour
 {
     SpVoice voice = new SpVoice();
-
+    SpeechRecognition SpeechRecognition;
+    [SerializeField] GameObject speechobject;
+    private void Start()
+    {
+        SpeechRecognition = speechobject.GetComponent<SpeechRecognition>();
+    }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
+        if (SpeechRecognition.promptbool)
         {
-            voice.Speak("Hello, what is your name?", SpeechVoiceSpeakFlags.SVSFlagsAsync | SpeechVoiceSpeakFlags.SVSFPurgeBeforeSpeak);
+           
+            StartCoroutine(waiting());
+           
         }
     }
+
+    IEnumerator waiting()
+    {
+        Debug.Log("girdi");
+        yield return new WaitForSeconds(3f);
+        voice.Speak(APIManager.Instance.response, SpeechVoiceSpeakFlags.SVSFlagsAsync | SpeechVoiceSpeakFlags.SVSFPurgeBeforeSpeak);
+    }
+
+   
 }
