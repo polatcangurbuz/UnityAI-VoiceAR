@@ -14,7 +14,7 @@ public class APIManager : MonoBehaviour
     SpeechRecognition speech;
     [SerializeField] GameObject speechrec;
     public static APIManager Instance { get; private set; }
-
+    bool secondbutton = false;
     private void Awake()
     {
         if (Instance == null)
@@ -35,10 +35,15 @@ public class APIManager : MonoBehaviour
 
     private void Update()
     {
-        if (speech.promptbool)
+        //if (speech.promptbool)
+        //{
+        //    StartCoroutine(SendDataToGAS());
+
+        //}
+        if (secondbutton)
         {
             StartCoroutine(SendDataToGAS());
-         
+            secondbutton = false;
         }
     }
 
@@ -71,7 +76,10 @@ public class APIManager : MonoBehaviour
         prompt = value;
     }
 
-    
+    public void secondButton()
+    {
+        secondbutton = true;
+    }
 
    
 }
